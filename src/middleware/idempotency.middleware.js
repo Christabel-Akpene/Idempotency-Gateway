@@ -1,11 +1,10 @@
-
 import { getKey, setKey, deleteKey } from "../utils/memoryStore.js";
 import { hashBody } from "../utils/hash.js";
 
-const pendingRequests = new Map();
-
 const idempotencyMiddleware = async (req, res, next) => {
-    const key = req.headers["idempotency-key"];
+    const apiKey = req.headers["api-key"];
+    const idempotencyKey = req.headers["idempotency-key"];
+    const key = `${apiKey}:${idempotencyKey}`
 
     if (!key){
         return res.status(400).json({ message: "Idempotency key header is required"})
