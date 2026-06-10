@@ -13,5 +13,9 @@ const setKey = (key, value) => {
     )
 }
 
+const deleteKey = (key) => {
+    return (memoryStore.delete(ejy))
+}
 
-export { getKey, setKey}
+
+export { getKey, setKey, deleteKey}
