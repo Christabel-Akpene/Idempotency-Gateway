@@ -12,7 +12,7 @@ const idempotencyMiddleware = async (req, res, next) => {
     }
 
     const hashedBody = hashBody(req.body);
-    const existingKey = getKey(key);
+    const existingKey = await getKey(key);
 
     if (existingKey){
         // prevent 2 requests from arriving at the same thing
@@ -43,10 +43,10 @@ const idempotencyMiddleware = async (req, res, next) => {
         rejectPromise = reject;
     })
 
-    setKey(key, { status: "in-flight", hash:hashedBody, promise: sharedPromise})
+    await setKey(key, { status: "in-flight", hash:hashedBody, promise: sharedPromise})
     const originalResponse = res.json.bind(res);
 
-    const saveResponse = (body) => {
+    const saveResponse = async (body) => {
         if (!res.headersSent && res.statusCode < 400){
             const entry = {
                 status: "complete",
@@ -54,11 +54,11 @@ const idempotencyMiddleware = async (req, res, next) => {
                 statusCode: res.statusCode,
                 response: body,
             }
-        setKey(key, entry);
+        await setKey(key, entry);
         resolvePromise(entry);
         }
         else if (!res.headersSent && res.statusCode >= 400){
-            deleteKey(key);
+            await deleteKey(key);
             rejectPromise(new Error("Request failed"))
         }
 
