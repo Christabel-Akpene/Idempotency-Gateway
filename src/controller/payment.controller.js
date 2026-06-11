@@ -21,7 +21,7 @@ const createPayment = async ( req, res ) => {
         // simulate 2 second delay
         await new Promise(resolve => {
             return (
-                setTimeout(resolve, 10000)
+                setTimeout(resolve, 2000)
             )
         })
         res.status(201).json({ message: `Charged ${amount} ${currency}` })
