@@ -116,3 +116,9 @@ If payment processing fails, the idempotency key is deleted rather than cached. 
 ## Developer's Choice: API-key authentication with per-client keys
 
 Every request must present an `api-key` header matching the configured `API_KEY`. This allows only verified clients to access the system and prevents clients from interfering with each other.
+
+
+## Live Demo
+URL: https://idempotency-gateway-w0iq.onrender.com/process-payment
+
+Test with `POST /process-payment` using the headers and body defined in the API documentation section
