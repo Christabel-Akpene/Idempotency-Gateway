@@ -20,6 +20,7 @@ const getKey = async (key) => {
 
     return data;
 }
+
 // set key in redis set it for 24 hours and delete the key
 const setKey = async (key, values, ttlSeconds = 86400) => {
     const { promise, ...rest } = values;
@@ -28,10 +29,22 @@ const setKey = async (key, values, ttlSeconds = 86400) => {
     }
     await redis.set(key, rest, { ex: ttlSeconds})
 }
+
+// set the key only if it doesn't already exist so two simultaneous requests won't have same key
+const setKeyIfAbsent = async (key, values, ttlSeconds = 84000) => {
+    const { promise, ...rest } = values;
+    const claimedKey = await redis.set(key, rest, { nx: true, ex: ttlSeconds}) === "OK";
+    if (claimedKey && promise ){
+        pendingPromises.set(key, promise);
+    }
+    return claimedKey;
+}
+
+
 // delete key 
 const deleteKey = async (key) => {
     pendingPromises.delete(key);
     await redis.del(key);
 }
 
-export { getKey, setKey, deleteKey }
+export { getKey, setKey, setKeyIfAbsent, deleteKey }
